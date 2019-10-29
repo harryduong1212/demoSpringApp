@@ -1,0 +1,67 @@
+<!DOCTYPE HTML>
+    <html xmlns:th="http://www.thymeleaf.org">
+<head>
+
+</head>
+<body>
+<!-- Include _menu.html -->
+<th:block th:include="/_menu"></th:block>
+
+<h2>UserList Page</h2>
+
+
+
+<div th:if="${ #lists.isEmpty(searchResults)}">
+    <th th:if="${flag} == 1">Message: No result found!</th>
+    <table border=1 cellpadding=10 cellspacing=0 th:if="${flag} != 1">
+        <tr>
+            <th >UserId</th>
+            <th >Username</th>
+            <th >Email</th>
+            <th >Role</th>
+            <th >Enable</th>
+            <th >Create</th>
+            <th >Update</th>
+        </tr>
+        <tr th:each="user : ${userlist}">
+            <td th:text="${user.getUserId()}">UserId</td>
+            <td th:text="${user.getUserName()}">Username</td>
+            <td th:text="${user.getEmail()}">Email</td>
+            <td th:text="${user.getRole()}">Role</td>
+            <td th:text="${user.isEnable()}">Enable</td>
+            <td th:text="${user.getCreate()}">Create</td>
+            <td th:text="${user.getUpdate()}">Update</td>
+        </tr>
+    </table>
+</div>
+<form action="#" th:action="@{/search}" th:object="${searchResults}">
+    <label for="search_input">Search:</label> <input name="search"
+                                                     id="search">
+</input>
+    <div th:if="${not #lists.isEmpty(searchResults)}">
+        <h2>Search Results</h2>
+        <table border=1 cellpadding=10 cellspacing=0>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>name</th>
+                <th>email</th>
+                <th>role</th>
+                <th>enable</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="search : ${searchResults}">
+                <td th:text="${search.getUserId()}">Text ...</td>
+                <td th:text="${search.getUserName()}">Text ...</td>
+                <td th:text="${search.getEmail()}">Text ...</td>
+                <td th:text="${search.getRoles().getRoleName()}">Text...</td>
+                <td th:text="${search.isEnabled()}">Text...</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</form>
+
+</body>
+</html>
