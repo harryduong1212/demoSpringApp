@@ -5,6 +5,8 @@ import com.demo.oauth2.entity.AppUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +25,14 @@ public class UserMapperImpl implements UserMapper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserMapperImpl.class);
 
+    private void simulateSlowService() {
+        try {
+            Thread.sleep(3000L);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public AppUserForm toUserForm(AppUser appUser) {
         if(appUser == null) { return null; }
@@ -39,7 +49,8 @@ public class UserMapperImpl implements UserMapper {
         appUserForm.firstName(appUser.getFirstName());
         appUserForm.lastName(appUser.getLastName());
         appUserForm.role(appUser.getRoles().getRoleName());
-        LOGGER.info("Convert appUser to appUserForm successfully!");
+        LOGGER.info("Convert appUser to appUserForm successfully! User: " + appUser.getUserName());
+        simulateSlowService();
         return appUserForm.build();
     }
 
@@ -52,7 +63,7 @@ public class UserMapperImpl implements UserMapper {
         appUser.userName(appUserForm.getUserName());
         appUser.encrytedPassword(bCryptPasswordEncoder.encode(appUserForm.getPassword()));
         appUser.email(appUserForm.getEmail());
-        LOGGER.info("Convert appUserForm to appUser successfully!");
+        LOGGER.info("Convert appUserForm to appUser successfully! User: " + appUserForm.getUserName());
         return appUser.build();
     }
 
@@ -71,6 +82,7 @@ public class UserMapperImpl implements UserMapper {
             appUserForm.create(user.getCreatedDate());
             appUserForms.add(appUserForm.build());
         }
+        LOGGER.info("Convert appUserList to appUserFormList successfully!");
         return appUserForms;
     }
 }

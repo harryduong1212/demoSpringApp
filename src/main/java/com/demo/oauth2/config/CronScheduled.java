@@ -29,11 +29,12 @@ public class CronScheduled {
     private static final Logger LOGGER = LoggerFactory.getLogger(CronScheduled.class);
 
     @Async
-    @Scheduled(cron = "0 * * * * MON-THU")
+    @Scheduled(cron = "0/10 * * * * MON-THU")
     public void collectAllUser() throws JsonProcessingException {
         List<AppUser> appUserList = userRepository.findAll();
         for( AppUser x : appUserList) {
-            AppUserForm temp = userMapperImpl.toUserForm(x);
+            AppUserForm temp;
+            temp = userMapperImpl.toUserForm(x);
             String serialize = userDetailsServiceImpl.testSerialize(temp);
             System.out.println( serialize );
             AppUserForm appUserForm = userDetailsServiceImpl.testDeserialize(serialize);
@@ -41,4 +42,5 @@ public class CronScheduled {
             //LOGGER.info(x.getUserName());
         }
     }
+
 }

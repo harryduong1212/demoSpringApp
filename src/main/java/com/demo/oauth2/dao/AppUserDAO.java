@@ -14,6 +14,7 @@ import com.demo.oauth2.form.AppUserForm;
 import com.demo.oauth2.utils.EncrytedPasswordUtils;
 import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionKey;
 import org.springframework.social.connect.UserProfile;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @Transactional
+
 public class AppUserDAO {
 
     @Autowired
@@ -32,6 +34,8 @@ public class AppUserDAO {
 
     @Autowired
     private UserRepository userRepository;
+
+
 
     public AppUser findAppUserByUserId(Long userId) {
         try {

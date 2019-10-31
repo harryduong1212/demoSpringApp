@@ -22,6 +22,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -42,6 +45,7 @@ import org.slf4j.LoggerFactory;
 
 @Service
 @Transactional
+
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
@@ -68,7 +72,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private UsersConnectionRepository connectionRepository;
 
-
+    @Autowired
+    CacheManager cacheManager;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserDetailsServiceImpl.class);
 
@@ -191,17 +196,29 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         userRepository.save(appUser);
     }
 
+    private void simulateSlowService() {
+        try {
+            Thread.sleep(3000L);
+            System.out.println("System sleep");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Cacheable(value="serialize", keyGenerator="customKeyGenerator")
     public String testSerialize(AppUserForm appUserForm) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
-
         SimpleModule module = new SimpleModule();
         module.addSerializer(AppUserForm.class, new CustomUserSerialize());
         mapper.registerModule(module);
 
+
         String serialized = mapper.writeValueAsString(appUserForm);
+        simulateSlowService();
         return serialized;
     }
 
+    @Cacheable(value="deserialize", keyGenerator="customKeyGenerator")
     public AppUserForm testDeserialize(String json) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         SimpleModule module = new SimpleModule();
@@ -209,6 +226,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         mapper.registerModule(module);
 
         AppUserForm appUserForm = mapper.readValue(json, AppUserForm.class);
+        simulateSlowService();
         return appUserForm;
     }
 
@@ -235,7 +253,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             resultList.addAll(appUserList);
         }
         //List<AppUser> appUserList = userRepository.findAll(UserSearchSpecification.getUsersByNameSpec(searchForm.getSearchRange().get(2), searchKey));
-        return appUserList;
+        return resultList;
     }
 }
 

@@ -45,4 +45,5 @@ public class ConfigMailSender {
         messageSource.setCacheSeconds(0);
         return messageSource;
     }
+
 }

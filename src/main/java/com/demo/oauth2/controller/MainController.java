@@ -248,9 +248,9 @@ public class MainController {
 
     @RequestMapping(value = "/search", method = RequestMethod.GET)
     public String searchPage(@RequestParam(value = "search", required = false) String searchU, Model model) {
-        List<AppUserForm> userlist = new ArrayList<>();
+        List<AppUserForm> userList = new ArrayList<>();
         List<AppUser> searchResults = new ArrayList<>();
-        userlist = userDetailsServiceImpl.getAllUsers();
+        userList = userDetailsServiceImpl.getAllUsers();
         try {
             System.out.println(searchU);
             if(searchU != null && searchU != "") {
@@ -261,7 +261,7 @@ public class MainController {
             }
             else {
                 model.addAttribute("message", "User List");
-                model.addAttribute("userlist", userlist);
+                model.addAttribute("userlist", userList);
             }
             return "searchPage";
         } catch (Exception ex) {
